@@ -3,7 +3,7 @@
  * Handles communications with the Express.js mail backend
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://avinzbackend-5.onrender.com/api';
 
 export const sendContactMessage = async (formData) => {
   try {
@@ -62,28 +62,28 @@ export const sendQuoteRequest = async (quoteData) => {
   }
 };
 
-export const sendEnrollmentRequest = async (enrollData) => {
+export const sendAIChatMessage = async (messages) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/enroll`, {
+    const response = await fetch(`${API_BASE_URL}/ai/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(enrollData),
+      body: JSON.stringify({ messages }),
     });
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to submit enrollment.');
+      throw new Error(data.message || 'Failed to send AI message.');
     }
     return data;
   } catch (error) {
-    console.error('API Error [sendEnrollmentRequest]:', error);
+    console.error('API Error [sendAIChatMessage]:', error);
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
       return {
         success: true,
         simulated: true,
-        message: `Enrollment submitted for ${enrollData.course} (Local Demo Mode). We will call you to confirm your seat!`
+        reply: 'This is a simulated response (Local Demo Mode).'
       };
     }
     throw error;
